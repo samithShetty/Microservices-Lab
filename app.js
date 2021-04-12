@@ -164,19 +164,52 @@ function fetchComments($id) {
 
 function setComment($id) {
 
-    //TODO complete implementation using the product id
-    alert("app.js/setComment() not implemented")
+    let comment = $("#message-text").val(); //Get inputted comment from textbox element
+    let score = $("#score").val(); //Get selected score from dropdown element
 
-    //HINT
-    //Take note of how the Ajax call in app.js/fetchComments() posts a GET request to corresponding API endpoint.
-    //Look at the Microservice API Documentation and find out the appripriate type of request for this action.
+    $.ajax({
+        url: Url + 'SetComment',
+        type: 'post',
+        dataType: 'json',
+        data: JSON.stringify({ //Parameters from documentation(3.3)
+            "product_id": $id, 
+            "comment": comment, 
+            "score": score }),
+        contentType: 'text/plain',
+
+        success: function(data) {
+            alert("Successfully submitted comment");
+        },
+
+        error: function(data) {
+            alert("There was an error submitting your comment");
+        }
+    });
 
 }
 
 function addToCart($id) {
 
-    //TODO complete implementation using the product id
-    alert("app.js/addToCart() not implemented")
+    let email =$.trim($('#email').val()); //Reuse implementation from toShoppingCart() to get user's email
+
+    $.ajax({
+        url: Url + 'AddToCart',
+        type: 'post',
+        dataType: 'json',
+        data: JSON.stringify({ //Parameters from documentation(3.5)
+            "product_id": $id, 
+            "email": email}),
+        contentType: 'text/plain',
+
+        success: function(data) {
+            alert("Successfully added product to cart");
+        },
+
+        error: function(data) {
+            alert("There was an error adding the product to your cart");
+        }
+    });
+
 
 
 }
