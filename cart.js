@@ -87,3 +87,41 @@ function checkOut() {
     });
 
 }
+
+// Removes all items from the cart
+function emptyCart() {
+    var items = []
+
+    // Retrieve cart items
+    $.ajax({
+        url: Url + 'GetCart',
+        type: 'GET',
+        dataType: 'json',
+        data: { 'email': email },
+        contentType: 'json',
+
+        success: function (data) {
+            items = data.data.List;
+
+            console.log(items);
+
+            // Loops through the cart and calls delete
+            $.each(items, function (key, product) {
+                $.ajax({
+                    url: Url + 'Cart/' + `${product.id}`,
+                    type: 'DELETE',
+                    contentType: 'json',
+
+                    success: function (data) {
+                    },
+
+                    error: function (data) {
+                        alert("Unable to remove " + product.title + " from cart.");
+                        console.error(err);
+                    }
+                });
+            });
+            alert("All items have been removed from your cart.");
+        }
+    });
+}
