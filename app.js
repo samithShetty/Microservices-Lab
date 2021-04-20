@@ -97,6 +97,9 @@ function fetchOneProduct($id) {
                 '                        <div class="action">\n' +
                 '                            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exampleModal" data-whatever="'+data['data']['List'][0]['id']+'" >Submit Comment</button>\n' +
                 '                        </div>\n' +
+                '                        <div class="action">\n' +
+                '                            <button class="btn btn-info" onclick="addToCart('+data['data']['List'][0]['id']+')">Add to Cart</button>\n' +
+                '                        </div>\n' +
                 '                    </div>\n' +
                 '                </div>\n' +
                 '            </div>\n' +
@@ -192,23 +195,27 @@ function addToCart($id) {
 
     let email =$.trim($('#email').val()); //Reuse implementation from toShoppingCart() to get user's email
 
-    $.ajax({
-        url: Url + 'AddToCart',
-        type: 'post',
-        dataType: 'json',
-        data: JSON.stringify({ //Parameters from documentation(3.5)
-            "product_id": $id, 
-            "email": email}),
-        contentType: 'text/plain',
+    if (email == ''){ //email validation
+        alert("Please enter your email at top of page.")
+    } else{
+        $.ajax({
+            url: Url + 'AddToCart',
+            type: 'post',
+            dataType: 'json',
+            data: JSON.stringify({ //Parameters from documentation(3.5)
+                "product_id": $id, 
+                "email": email}),
+            contentType: 'text/plain',
 
-        success: function(data) {
-            alert("Successfully added product to cart");
-        },
+            success: function(data) {
+                alert("Successfully added product to cart");
+            },
 
-        error: function(data) {
-            alert("There was an error adding the product to your cart");
-        }
-    });
+            error: function(data) {
+                alert("There was an error adding the product to your cart");
+            }
+        });
+    }
 
 
 
