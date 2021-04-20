@@ -62,8 +62,9 @@ function fetchProductList() {
     });
 }
 
-function fetchOneProduct($id) {
+async function fetchOneProduct($id) {
     var product;
+    var avg_score = await getAverageScore($id);
 
     //jQuery Ajax request
     $.ajax({
@@ -85,7 +86,7 @@ function fetchOneProduct($id) {
                 '                    </div>\n' +
                 '                    <div class="details col-md-6">\n' +
                 '                        <h3 class="product-title" style="margin-top: 10px">'+data['data']['List'][0]['title'].substring(0,15)+'...'+'</h3>\n' +
-                '                        <h3 class="average-rating" style="margin-top: 10px">'+ "Rating: "+ getAverageScore(data['data']['List'][0]['id']) + "/5"+ '</h3>\n' + //display the average rating
+                '                        <h3 class="average-rating" style="margin-top: 10px">'+ "Rating: "+ avg_score + "/5"+ '</h3>\n' + //display the average rating
                 '                        <div class="rating">\n' +
                 '                            <button class="btn btn-info" id="comment" onclick="fetchComments('+data['data']['List'][0]['id']+')">'+data['data']['List'][0]['comment_count']+' comments</button>\n' +
                 '                        </div>\n' +
@@ -235,31 +236,23 @@ function toShoppingCart(){
     }
 }
 
-function getAverageScore($id) {
+async function getAverageScore($id) {
     var sum = 0;
-    var total = 0;
-    var avg = 0;
+    var count = 0;
 
-    $.ajax({
+    const comments = await $.ajax({ //Use await instead of success to pause execution
         url: Url + 'GetProductComment',
         type: 'get',
         dataType: 'json',
         data: { "product_id": $id },
         contentType: 'text/plain',
-
-        success: function (data) {
-            $.each(data['data']['List'], function (i, item) { //loop through the comments to get the scores
-                total += 1; //keep track of the number of comments
-                sum += item['score']; //add up all the scores
-            });
-            avg = sum / total; //get the average by dividing the sum by the total number of comments
-            return avg; //return the average
-        },
-
-        error: function (data) {
-            alert("Unable to calculate average score.");
-        }
     });
+
+    for (comment in comments['data']['List']){ //Loop through reviews and calculate average rating
+        sum += comments['data']['List'][comment]['score'];
+        count++;
+    }
+    return Math.round(100*sum/count)/100; //Rounds to 2 decimal places
 }
 
 $('#exampleModal').on('show.bs.modal', function (event) {
